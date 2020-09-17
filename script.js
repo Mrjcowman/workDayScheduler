@@ -60,7 +60,7 @@ const forEachHourInDay = (callback)=>{
 // Format plain military-time hour as 12-hour text
 const formatHour = (hour)=>{
     if(hour>23) throw new Error("Hour out of bounds! Hour given: "+hour);
-    return hour>12? (hour-12+"PM") : (hour+"AM");
+    return hour>12? (hour-12+"PM") : hour==12? "12PM" : (hour+"AM");
 }
 
 // MAIN ========================================
