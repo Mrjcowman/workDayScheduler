@@ -4,7 +4,7 @@ const today = moment().format('MMMM Do YYYY');
 let hours = [];
 
 const startHour = 9;
-const endHour = 17;
+const endHour = 18;
 
 // Populate hours array
 const populateHoursArray = ()=>{
@@ -24,7 +24,20 @@ const populateHoursArray = ()=>{
     console.log("Hours Array initialized");
 }
 
-// TODO: Render List of hours
+// Handle clicks on elements
+const handleInputClick = event=>{
+    let thisInput = $(event.target);
+
+    console.log(thisInput.parent().attr("id"));
+}
+
+const handleSaveClick = event=>{
+    let thisButton = $(event.target);
+    
+    console.log(thisButton.parent().attr("id"));
+}
+
+// Render List of hours
 const renderHoursList = ()=>{
     container.html("");
     let thisHour = moment().hour();
@@ -44,6 +57,15 @@ const renderHoursList = ()=>{
         }
 
         container.append(thisRow);
+
+        $("#"+hour+"hrRow textarea").on("click", event=>{
+            handleInputClick(event);
+        })
+
+        $("#"+hour+"hrRow button").on("click", event=>{
+            event.preventDefault();
+            handleSaveClick(event);
+        })
 
     })
 }
