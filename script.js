@@ -1,6 +1,8 @@
 const container = $(".container");
 const today = moment().format('MMMM Do YYYY');
 
+const checkMarkSVG = '<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>';
+
 let hours = {};
 
 const startHour = 9;
@@ -24,10 +26,23 @@ const populateHoursArray = ()=>{
     console.log("Hours Array initialized");
 }    
 
-// TODO: implement hours list rendering
+// Render the textfields in the list
 const renderHoursList = ()=>{
     console.log("Rendering!");
-    forEachHourInDay(()=>{})
+    let thisHour = moment().hour();
+    forEachHourInDay(hour=>{
+        let thisField = $("."+formatHour(hour)+" textArea");
+        thisField.val(hours[formatHour(hour)]);
+
+        thisField.removeClass("past present future");
+        if(hour<thisHour){
+            thisField.addClass("past");
+        }else if(hour>thisHour){
+            thisField.addClass("future");            
+        }else{
+            thisField.addClass("present");            
+        }
+    })
 }
 
 // TODO: implement local storage updating
@@ -47,7 +62,7 @@ const handleInputBlur = event=>{
 
 const handleSaveClick = event=>{
     let thisButton = $(event.target);
-    let thisHour = thisButton.parent().attr("data-hout");
+    let thisHour = thisButton.parent().attr("data-hour");
     let inputData = thisButton.parent().find("textarea").val();
 
     hours[formatHour(thisHour)] = inputData;
@@ -55,7 +70,7 @@ const handleSaveClick = event=>{
     renderHoursList();    
 }    
 
-// Generate List of hours TODO: refactor to use rendering function
+// Generate List of hours
 const generateHoursList = ()=>{
     container.html("");
     let thisHour = moment().hour();
@@ -63,29 +78,23 @@ const generateHoursList = ()=>{
     forEachHourInDay(hour=>{
         let thisRow = $("<div>").addClass("row time-block "+formatHour(hour)).attr("data-hour", hour);
         thisRow.append($("<p>").addClass("hour col-1").text(formatHour(hour)));
-        thisRow.append($("<textarea>").addClass("col-10")).attr("value", hours[formatHour(hour)]);
-        thisRow.append($("<button>").addClass("saveBtn col-1").html('<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>'));
-        
-        if(hour<thisHour){
-            thisRow.find("textarea").addClass("past");
-        }else if(hour>thisHour){
-            thisRow.find("textarea").addClass("present");
-        }else{
-            thisRow.find("textarea").addClass("future");
-        }    
+        thisRow.append($("<textarea>").addClass("col-10"));
+
+        thisRow.append($("<button>").addClass("saveBtn col-1").html(checkMarkSVG)); 
 
         container.append(thisRow);
 
         thisRow.find("textarea").on("blur", event=>{
             handleInputBlur(event);
-        })    
+        })
 
         thisRow.find("button").on("click", event=>{
             event.preventDefault();
             handleSaveClick(event);
-        })    
+        })
+    })
 
-    })    
+    renderHoursList();
 }    
 
 // Performs the callback function for each hour of the day
