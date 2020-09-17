@@ -10,14 +10,13 @@ const endHour = 18;
 
 // Populate hours array
 const populateHoursArray = ()=>{
-    let localStoredHours = JSON.parse(localStorage.getItem("hours"));
-    if(localStoredHours){
-        if(localStoredHours[today]){
-            hours = localStoredHours[today];
-            console.log("Hours Array populated with persistent data");
-            return;
-        }    
-    }    
+    hours = JSON.parse(localStorage.getItem(today));
+    if(hours){
+        console.log("Hours Array populated with persistent data");
+        return;
+    }
+
+    hours = {};
     
     forEachHourInDay(hour=>{
         hours[formatHour(hour)] = "";
@@ -45,9 +44,12 @@ const renderHoursList = ()=>{
     })
 }
 
-// TODO: implement local storage updating
+// Push the hours info to the local storage
 const updateLocalStorage = ()=>{
     console.log("Saving!");
+
+    localStorage.setItem(today, JSON.stringify(hours));
+
 }
 
 // Handle clicks on elements
