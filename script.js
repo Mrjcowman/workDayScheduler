@@ -1,7 +1,7 @@
 const container = $(".container");
 const today = moment().format('MMMM Do YYYY');
 
-let hours = [];
+let hours = {};
 
 const startHour = 9;
 const endHour = 18;
@@ -14,38 +14,56 @@ const populateHoursArray = ()=>{
             hours = localStoredHours[today];
             console.log("Hours Array populated with persistent data");
             return;
-        }
-    }
-
+        }    
+    }    
+    
     forEachHourInDay(hour=>{
-        hours.push({"time": formatHour(hour), "event": ""});
-    })
-
+        hours[formatHour(hour)] = "";
+    })    
+    
     console.log("Hours Array initialized");
+}    
+
+// TODO: implement hours list rendering
+const renderHoursList = ()=>{
+    console.log("Rendering!");
+    forEachHourInDay(()=>{})
+}
+
+// TODO: implement local storage updating
+const updateLocalStorage = ()=>{
+    console.log("Saving!");
 }
 
 // Handle clicks on elements
-const handleInputClick = event=>{
+const handleInputBlur = event=>{
     let thisInput = $(event.target);
+    let newTarget = $(event.relatedTarget);
 
-    console.log(thisInput.parent().attr("id"));
-}
+    if(newTarget[0] == thisInput.parent().find("button")[0]) return;
+
+    renderHoursList();
+}    
 
 const handleSaveClick = event=>{
     let thisButton = $(event.target);
-    
-    console.log(thisButton.parent().attr("id"));
-}
+    let thisHour = thisButton.parent().attr("data-hout");
+    let inputData = thisButton.parent().find("textarea").val();
 
-// Render List of hours
-const renderHoursList = ()=>{
+    hours[formatHour(thisHour)] = inputData;
+    updateLocalStorage();
+    renderHoursList();    
+}    
+
+// Generate List of hours TODO: refactor to use rendering function
+const generateHoursList = ()=>{
     container.html("");
     let thisHour = moment().hour();
 
     forEachHourInDay(hour=>{
-        let thisRow = $("<div>").addClass("row time-block").attr("id", hour+"hrRow");
+        let thisRow = $("<div>").addClass("row time-block "+formatHour(hour)).attr("data-hour", hour);
         thisRow.append($("<p>").addClass("hour col-1").text(formatHour(hour)));
-        thisRow.append($("<textarea>").addClass("col-10"));
+        thisRow.append($("<textarea>").addClass("col-10")).attr("value", hours[formatHour(hour)]);
         thisRow.append($("<button>").addClass("saveBtn col-1").html('<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>'));
         
         if(hour<thisHour){
@@ -54,21 +72,21 @@ const renderHoursList = ()=>{
             thisRow.find("textarea").addClass("present");
         }else{
             thisRow.find("textarea").addClass("future");
-        }
+        }    
 
         container.append(thisRow);
 
-        $("#"+hour+"hrRow textarea").on("click", event=>{
-            handleInputClick(event);
-        })
+        thisRow.find("textarea").on("blur", event=>{
+            handleInputBlur(event);
+        })    
 
-        $("#"+hour+"hrRow button").on("click", event=>{
+        thisRow.find("button").on("click", event=>{
             event.preventDefault();
             handleSaveClick(event);
-        })
+        })    
 
-    })
-}
+    })    
+}    
 
 // Performs the callback function for each hour of the day
 // Accepts a parameter in the callback function which will pass
@@ -87,4 +105,4 @@ const formatHour = (hour)=>{
 
 // MAIN ========================================
 populateHoursArray();
-renderHoursList();
+generateHoursList();
