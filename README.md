@@ -5,7 +5,7 @@ A simple calendar application that allows the user to save events for each hour 
 
 [Deployed Site: mrjcowman.github.io/workDayScheduler](https://mrjcowman.github.io/workDayScheduler/)
 
-![Screencap of Site](assets/images/screencap.png)
+![Screencap of Site](screencap.png)
 
 ## Credits
 Thanks to the [Bootstrap](https://getbootstrap.com/) team for making the design of this mobile-friendly site simple.
